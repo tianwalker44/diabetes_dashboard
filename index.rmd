@@ -21,7 +21,7 @@ library(here)
 ```
 
 ```{r}
-data <- import(here("pre_reg_data.csv"))
+data <- import(here("reg_data.csv"))
 ```
 
 Demographics
@@ -92,8 +92,83 @@ data %>%
 ```
 
 
-Explore!
+Stats!
 ===========
+
+```{r include=FALSE}
+data <- data %>%
+  mutate(
+    across(
+      # ^means begins with. 0-9 are the possible numbers and {1,2} means it 
+      # could be one or two digits
+      matches("^resources_[0-9]{1,2}$"), 
+# need to ask Sara about what the period inside parens indicates
+      ~ ifelse(is.na(.), 0, 1)))
+
+```
+
+```{r include=FALSE}
+# data <- survey2 %>% 
+# mutate(resource_sum = rowSums(resources_1,resources_2,resources_3, resources_4, resources_5, resources_6,resources_7, resources_8, resources_9, resources_10, resources_11, resources_12, resources_13, resources_14, resources_15,resources_16, resources_17, resources_18, resources_19 ,resources_20, resources_21))
+
+data$resources_1 <- as.numeric(data$resources_1)
+data$resources_2 <- as.numeric(data$resources_2)
+data$resources_3 <- as.numeric(data$resources_3)
+data$resources_4 <- as.numeric(data$resources_4)
+data$resources_5 <- as.numeric(data$resources_1)
+data$resources_6 <- as.numeric(data$resources_1)
+data$resources_7 <- as.numeric(data$resources_1)
+data$resources_8 <- as.numeric(data$resources_1)
+data$resources_9 <- as.numeric(data$resources_1)
+data$resources_10 <- as.numeric(data$resources_1)
+data$resources_11 <- as.numeric(data$resources_1)
+data$resources_12 <- as.numeric(data$resources_1)
+data$resources_13 <- as.numeric(data$resources_1)
+data$resources_14 <- as.numeric(data$resources_1)
+data$resources_15 <- as.numeric(data$resources_1)
+data$resources_16 <- as.numeric(data$resources_1)
+data$resources_17 <- as.numeric(data$resources_1)
+data$resources_18 <- as.numeric(data$resources_1)
+data$resources_19 <- as.numeric(data$resources_1)
+data$resources_20 <- as.numeric(data$resources_1)
+data$resources_21 <- as.numeric(data$resources_1)
+
+
+
+sub <- data %>% 
+  select(resources_1:resources_21)
+  
+
+
+
+data$res_sum = data %>% 
+  select(resources_1:resources_21) %>% 
+  rowSums(na.rm=T)
+ 
+
+
+data_mod <- sub %>%
+mutate(sum_res = rowSums(.))
+print(data_mod)
+
+new <- data_mod %>% 
+  select(sum_res)
+
+# data_mod <- data %>%
+# mutate(sum_of_rows = rowSums(resources_1,resources_2,resources_3, resources_4, resources_5, resources_6,resources_7, resources_8, resources_9, resources_10, resources_11, resources_12, resources_13, resources_14, resources_15,resources_16, resources_17, resources_18, resources_19 ,resources_20, resources_21))
+
+dat <- cbind(data, new)
+
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(sum_res, des_score)) + geom_point()
+
+#Want to make this so that when you hover over the points it shows you the names of the resources the person uses
+```
+
+
 
 
 ### Location  {data-padding=10}
