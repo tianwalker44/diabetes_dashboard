@@ -16,49 +16,102 @@ library(flexdashboard)
 library(tidyverse)
 #install.packages("plotly")
 library(plotly)
+library(rio)
+library(here)
 ```
 
-Prelude
+```{r}
+data <- import(here("pre_reg_data.csv"))
+```
+
+Demographics
 ==========
 
 
-Column {data-width=650}
+Column {data-width=600}
 -----------------------------------------------------------------------
 
-### Chart A
+### Education
 
 ```{r}
 
+data %>% 
+  ggplot(aes(edu)) + 
+  geom_bar(aes(fill = edu), show.legend = FALSE) + 
+  labs(x = "education level", y = "number of people", fill = "Education Level") + coord_flip() + theme(axis.title.y=element_blank())
+
+
+# ggplot(df, aes(x=x, y=y))+
+#   geom_point() +
+#   theme(axis.text.x=element_blank(), #remove x axis labels
+#         axis.ticks.x=element_blank(), #remove x axis ticks
+#         axis.text.y=element_blank(),  #remove y axis labels
+#         axis.ticks.y=element_blank()  #remove y axis ticks
+#         )
+
 ```
 
-Column {data-width=350}
+
+### Insulin Therapy
+
+
+```{r}
+
+data %>% 
+  ggplot(aes(insulin)) + 
+  geom_bar(aes(fill = insulin), show.legend = FALSE) + 
+  labs(x = "Gender", y = "number of people", fill = "insulin") + theme(axis.title.x=element_blank())
+
+```
+
+
+Column {data-width=600}
 -----------------------------------------------------------------------
 
 
 
-**Row format allows for a tab option. <br> Need to learn more about how text works** 
 
-### Chart B {data-padding=100}
+### Gender  {data-padding=10}
 
 ```{r}
 
-#Row {.tabset} will allow you to create tabs
-#equals sign below text will create vertical tabs
+data %>% 
+  ggplot(aes(gender)) + 
+  geom_bar(aes(fill = gender), show.legend = FALSE) + 
+  labs(x = "Gender", y = "number of people", fill = "Gender") + theme(axis.title.x=element_blank())
 
 ```
---------
+
+### Place
+
+```{r}
+data %>% 
+  ggplot(aes(rural_urban)) + 
+  geom_bar(aes(fill = rural_urban), show.legend = FALSE) + 
+  labs(x = "Rural/Urban", y = "number of people", fill = "Rural/Urban") + theme(axis.title.x=element_blank())
+
+```
 
 
 Explore!
 ===========
 
 
-### Chart C
+### Location  {data-padding=10}
 
 ```{r}
-mtcars %>% 
-  ggplot(aes(wt, disp)) + geom_point(aes(color = vs))
+
+data %>% 
+  ggplot(aes(rural_urban)) + 
+  geom_bar(aes(fill = rural_urban), show.legend = FALSE) + 
+  labs(x = "Rural/Urban", y = "number of people", fill = "Rural/Urban") + theme(axis.title.x=element_blank())
+
 ```
+
+
+--------
+
+
 
 # Chart D {.storyboard}
 
