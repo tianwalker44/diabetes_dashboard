@@ -54,7 +54,6 @@ data %>%
 
 ### Insulin Therapy
 
-
 ```{r}
 
 data %>% 
