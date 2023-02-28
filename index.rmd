@@ -8,7 +8,6 @@ output:
     #vs. fill
     #fill leaves you with a fixed amount of space
     #theme: spacelab
-    
 ---
 
 ```{r setup, include=FALSE}
@@ -109,68 +108,18 @@ data <- data %>%
 # need to ask Sara about what the period inside parens indicates
       ~ ifelse(is.na(.), 0, 1)))
 
+
 ```
 
 ```{r include=FALSE}
-# data <- survey2 %>% 
-# mutate(resource_sum = rowSums(resources_1,resources_2,resources_3, resources_4, resources_5, resources_6,resources_7, resources_8, resources_9, resources_10, resources_11, resources_12, resources_13, resources_14, resources_15,resources_16, resources_17, resources_18, resources_19 ,resources_20, resources_21))
 
-data$resources_1 <- as.numeric(data$resources_1)
-data$resources_2 <- as.numeric(data$resources_2)
-data$resources_3 <- as.numeric(data$resources_3)
-data$resources_4 <- as.numeric(data$resources_4)
-data$resources_5 <- as.numeric(data$resources_1)
-data$resources_6 <- as.numeric(data$resources_1)
-data$resources_7 <- as.numeric(data$resources_1)
-data$resources_8 <- as.numeric(data$resources_1)
-data$resources_9 <- as.numeric(data$resources_1)
-data$resources_10 <- as.numeric(data$resources_1)
-data$resources_11 <- as.numeric(data$resources_1)
-data$resources_12 <- as.numeric(data$resources_1)
-data$resources_13 <- as.numeric(data$resources_1)
-data$resources_14 <- as.numeric(data$resources_1)
-data$resources_15 <- as.numeric(data$resources_1)
-data$resources_16 <- as.numeric(data$resources_1)
-data$resources_17 <- as.numeric(data$resources_1)
-data$resources_18 <- as.numeric(data$resources_1)
-data$resources_19 <- as.numeric(data$resources_1)
-data$resources_20 <- as.numeric(data$resources_1)
-data$resources_21 <- as.numeric(data$resources_1)
-
-
-
-#sub <- data %>% 
-  #select(resources_1:resources_21)
-  
-
-
-
- data$res_sum = data %>% 
-  select(resources_1:resources_21) %>% 
-   rowSums(na.rm=T)
-#  
-# 
-
-# data_mod <- sub %>%
-# mutate(sum_res = rowSums(.))
-# print(data_mod)
-# 
-# new <- data_mod %>% 
-#   select(sum_res)
-
-# data_mod <- data %>%
-# mutate(sum_of_rows = rowSums(resources_1,resources_2,resources_3, resources_4, resources_5, resources_6,resources_7, resources_8, resources_9, resources_10, resources_11, resources_12, resources_13, resources_14, resources_15,resources_16, resources_17, resources_18, resources_19 ,resources_20, resources_21))
-
-#dat <- cbind(data, new)
+data$res_sum <- data %>% 
+  select(resources_1:resources_21)%>%
+  rowSums(na.rm=TRUE)
 
 ```
 
-```{r}
-
-#dat$dds_means = as.numeric(dat$dds_means)
-#dat$sum_res = as.numeric(dat$sum_res)
-#dat$sum_res = as.integer(dat$sum_res)
- #g <- 
+```{r,fig.width=7,fig.height=4}
 data %>% 
   ggplot(aes(res_sum, des_score)) + 
   geom_point(aes(size = chai_means),color = "purple3") +           scale_color_manual(values = my_colors)+ 
@@ -180,12 +129,6 @@ data %>%
   xlim("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13") +
   labs(x = "Number of Resources Used", y = "Diabetes Empowerment")
 
-#p  + theme( axis.line = element_line(colour = "darkorchid", 
-                      #linewidth = 2, linetype = "solid"))
-
-#Want to make this so that when you hover over the points it shows you the names of the resources the person uses
-
-#ggsave("g.png")
 ```
 
 ### Location  {data-padding=10}
@@ -266,13 +209,13 @@ Start Here
 ```{r echo=FALSE}
 #letterCloud( frequency_dataframe, word = "LOW", color="black", backgroundColor="deepskyblue")
 
-
 draft <- wordcloud2(data=frequency_dataframe, size=1.6)
 
-ggsave("draft.png")
-
-draft
+htmlwidgets::saveWidget(draft, 
+                        "draft.html",
+                        selfcontained = F, libdir = "lib")
 ```
+<iframe src="draft.html" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen="" allow="autoplay"></iframe>
 
 ### Chart F
 
