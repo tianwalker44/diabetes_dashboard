@@ -261,7 +261,7 @@ Interviews
 =================================
 
 
-### **Description of Low Blood Sugar...**
+### **Description of Low Blood Sugar...** (if this image is blank, hit the refresh button)
 
 ```{r echo=FALSE}
 #letterCloud( frequency_dataframe, word = "LOW", color="black", backgroundColor="deepskyblue")
