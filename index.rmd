@@ -98,6 +98,59 @@ data %>%
 
 ```
 
+----------------------
+
+
+Understanding the Data
+=======================
+
+*Describe the scales here
+
+### First exploration with interaction
+
+```{r}
+library(plotly)
+
+fig <- plot_ly(data = data,
+               x = ~ywd,
+               y = ~age,
+               type = 'scatter', 
+               mode = 'markers') 
+
+fig
+```
+
+### Colors are interviewed, Grey are randomly selected for pre-registration analyses
+
+```{r}
+library(ggrepel)
+data <- data %>% 
+  mutate(int_number = case_when(
+part_id == "R_cLVjYpvjfQixvpv" ~ 1,
+part_id == "R_3Eyawv7ZHbUXMX8" ~ 2,
+part_id == "R_1fdCp8U6J7TIpPG" ~ 3, 
+part_id == "R_3nT0W62FHiaCGPg" ~ 4,   
+part_id == "R_1g6IuFecvJV6n6x" ~ 5, 
+part_id == "R_1mr573O3Ezhk8XJ" ~ 6,
+part_id == "R_R3vFesQEw5vyUyB" ~ 7, 
+part_id == "R_2TOeaDtBAd8rJgQ" ~ 8,
+part_id == "R_1jTbJ73cP1sJNAX" ~ 9,
+part_id == "R_2aEnOJSABPWYd6B" ~ 10))
+
+data$int_number <- as.factor(data$int_number)
+
+p <- data %>% 
+ggplot(aes(dds_means, des_score)) + 
+geom_point(aes(color = int_number), size = 5)   + 
+geom_text_repel(data = data, aes( label = ywd), max.overlaps = Inf) +
+  theme_bw() + 
+  labs(x = "Diabetes Distress", y = "Diabetes Empowerment", caption = "mean values from validated scales", title = "Years with Diabetes: looking at distress and empowerment")
+
+p
+```
+
+
+
 
 Stats!
 ===========
@@ -123,6 +176,8 @@ data$res_sum <- data %>%
 
 ```
 
+### Initial Peak
+
 ```{r,fig.width=7,fig.height=4}
 data %>% 
   ggplot(aes(res_sum, des_score)) + 
@@ -131,13 +186,49 @@ data %>%
   theme(axis.line = element_line(colour = "darkmagenta", 
        linewidth = 2, linetype = "solid")) +  scale_fill_manual(values = my_colors) + 
   xlim("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13") +
-  labs(x = "Number of Resources Used", y = "Diabetes Empowerment")
+  labs(x = "Number of Resources Used", y = "Diabetes Empowerment", size = "Health Engagement Score")
 
 ```
 
---------
 
 
+
+### Regression Line Outcome 1
+
+```{r}
+data %>% 
+ggplot(aes(res_sum, des_score)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm", color = "deeppink4") + theme(panel.grid = element_blank()) + labs(x = "Sum of Resources", y = "Diabetes Empowerment Score")
+```
+
+
+### Regression Line Outcome 2
+
+```{r}
+data %>% 
+ggplot(aes(res_sum, percent_time_70_180)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm", color = "deeppink4") + theme(panel.grid = element_blank()) + labs(x = "Sum of Resources", y = "Time in Target Range")
+```
+
+
+### Regression Line Outcome 3 
+
+```{r}
+data %>% 
+ggplot(aes(res_sum, dds_means)) + 
+  geom_point()+ 
+  geom_smooth(method = "lm", color = "deeppink4") + theme(panel.grid = element_blank()) + labs(x = "Sum of Resources", y = "Diabetes Distress Score")
+```
+
+
+
+### Looking ahead 
+
+* The idea is to run t-tests, regressions, and a moderation and add visuals of those here
+
+------
 
 ```{r}
 library(wordcloud2) 
@@ -185,6 +276,7 @@ htmlwidgets::saveWidget(draft,
 
 -----------
 
+
 ### Words about Lows
 
 ```{r}
@@ -221,4 +313,6 @@ Key Findings
 ### Results
 
 Data Collection is ongoing: these graphs show the first 15 people in the study
+
+* This is where the main results will be summarized and ideally graphed in a way that shows general trends and makes results digestable. The take-away will not be too meaningful with the current 15 data points but the full dataset can be plugged in once data collection is over and the direction of the results can be re-written accordingly. 
 
