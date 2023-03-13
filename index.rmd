@@ -212,7 +212,7 @@ Column {data-width=600}
 
 What is the diversity of low symptom experiences (physical sensation and the number when symptoms start and stop)?
 
-### **Participants were asked to talk about what it feels like experience low blood sugar**
+### **Participants were asked to talk about what it feels like to experience low blood sugar**
 
 
 
