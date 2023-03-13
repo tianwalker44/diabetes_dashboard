@@ -1,5 +1,5 @@
 ---
-title: "In-class Demo of Dashboard"
+title: "Life of a Type 1: A Diabetes Research Study"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -19,110 +19,90 @@ library(rio)
 library(here)
 library(colorblindr)
 library(tidytext)
-
+library(gt)
+library(psych)
 ```
 
 ```{r}
+#dat <- import(here("pre_reg_data.csv"))
 data <- import(here("reg_data.csv"))
+
 int <- import(here("text_data.xlsx"))
 
 
 my_colors <- c("darkblue","darkmagenta", "chartreuse", "cyan","tomato")
 ```
-
-Demographics
+Background
 ==========
 
 
-Column {data-width=600}
+Column {data-width=400}
 -----------------------------------------------------------------------
 
-### Education
+**This dashboard currently shows graphics using the data that was made public as part of the pre-registration for this study. The goal is to have 200-500 people in the study and data collection is ongoing.** 
+
+
+### Demographics
 
 ```{r}
 
-data %>% 
-  ggplot(aes(edu)) + 
-  geom_bar(aes(fill = edu), show.legend = FALSE) + 
-  labs(x = "education level", y = "number of people", fill = "Education Level") + coord_flip() + theme(axis.title.y=element_blank()) + scale_fill_manual(values = my_colors)
+df <- data %>% 
+  rename(education = edu) %>% 
+  select( age, ywd, insulin, gender, education )
 
-
-# ggplot(df, aes(x=x, y=y))+
-#   geom_point() +
-#   theme(axis.text.x=element_blank(), #remove x axis labels
-#         axis.ticks.x=element_blank(), #remove x axis ticks
-#         axis.text.y=element_blank(),  #remove y axis labels
-#         axis.ticks.y=element_blank()  #remove y axis ticks
-#         )
-
-#cvd_grid(g)
+describe(df)
 ```
 
 
-### Insulin Therapy
+```{r eval=FALSE, include=FALSE}
+data <- data %>% 
+  mutate(int_number = case_when(
+part_id == "R_cLVjYpvjfQixvpv" ~ 1,
+part_id == "R_3Eyawv7ZHbUXMX8" ~ 2,
+part_id == "R_1fdCp8U6J7TIpPG" ~ 3, 
+part_id == "R_3nT0W62FHiaCGPg" ~ 4,   
+part_id == "R_1g6IuFecvJV6n6x" ~ 5, 
+part_id == "R_1mr573O3Ezhk8XJ" ~ 6,
+part_id == "R_R3vFesQEw5vyUyB" ~ 7, 
+part_id == "R_2TOeaDtBAd8rJgQ" ~ 8,
+part_id == "R_1jTbJ73cP1sJNAX" ~ 9,
+part_id == "R_2aEnOJSABPWYd6B" ~ 10))
 
-```{r}
+data$int_number <- as.factor(data$int_number)
+
+
+data$education <- data$edu
+  
+
+#data$int_number[is.na(data$int_number)] <- "Not Interviewed Yet"
 
 data %>% 
-  ggplot(aes(insulin)) + 
-  geom_bar(aes(fill = insulin), show.legend = FALSE) + 
-  labs(x = "Gender", y = "number of people", fill = "insulin") + theme(axis.title.x=element_blank()) + scale_fill_manual(values = my_colors)
+  select( age, ywd, insulin, gender, education ) %>% 
+  gt()
+
+df <- data %>% 
+  select( age, ywd, insulin, gender, education )
+
+#describe(df, fast=TRUE)
+
 
 ```
-
-
-Column {data-width=600}
------------------------------------------------------------------------
+ywd = years with diabetes
 
 
 
 
-### Gender  {data-padding=10}
 
-```{r}
 
-data %>% 
-  ggplot(aes(gender)) + 
-  geom_bar(aes(fill = gender), show.legend = FALSE) + 
-  labs(x = "Gender", y = "number of people", fill = "Gender") + theme(axis.title.x=element_blank()) +  scale_fill_manual(values = my_colors)
 
-```
 
-### Place
-
-```{r}
-data %>% 
-  ggplot(aes(rural_urban)) + 
-  geom_bar(aes(fill = rural_urban), show.legend = FALSE) + 
-  labs(x = "Rural/Urban", y = "number of people", fill = "Rural/Urban") + theme(axis.title.x=element_blank()) +  scale_fill_manual(values = my_colors)
-
-```
 
 ----------------------
 
 
-Understanding the Data
-=======================
 
-*Describe the scales here
 
-### First exploration with interaction
-
-```{r}
-library(plotly)
-
-fig <- plot_ly(data = data,
-               x = ~ywd,
-               y = ~age,
-               type = 'scatter', 
-               mode = 'markers') 
-
-fig
-```
-
-### Colors are interviewed, Grey are randomly selected for pre-registration analyses
-
-```{r}
+```{r eval=FALSE, include=FALSE}
 library(ggrepel)
 data <- data %>% 
   mutate(int_number = case_when(
@@ -141,7 +121,7 @@ data$int_number <- as.factor(data$int_number)
 
 p <- data %>% 
 ggplot(aes(dds_means, des_score)) + 
-geom_point(aes(color = int_number), size = 5)   + 
+geom_point(aes(color = ywd), size = 5)   + 
 geom_text_repel(data = data, aes( label = ywd), max.overlaps = Inf) +
   theme_bw() + 
   labs(x = "Diabetes Distress", y = "Diabetes Empowerment", caption = "mean values from validated scales", title = "Years with Diabetes: looking at distress and empowerment")
@@ -150,9 +130,7 @@ p
 ```
 
 
-
-
-Stats!
+Research Question One
 ===========
 
 ```{r include=FALSE}
@@ -176,111 +154,91 @@ data$res_sum <- data %>%
 
 ```
 
-### Initial Peak
 
-```{r,fig.width=7,fig.height=4}
-data %>% 
-  ggplot(aes(res_sum, des_score)) + 
-  geom_point(aes(size = chai_means),color = "purple3") +           scale_color_manual(values = my_colors)+ 
-  theme_classic() + 
-  theme(axis.line = element_line(colour = "darkmagenta", 
-       linewidth = 2, linetype = "solid")) +  scale_fill_manual(values = my_colors) + 
-  xlim("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13") +
-  labs(x = "Number of Resources Used", y = "Diabetes Empowerment", size = "Health Engagement Score")
+### Research Question One
+
+```{r include=FALSE}
+
+temp <- select(data,resources_1:resources_21) %>% 
+  rename(Endocrinologist = resources_1, "Diabetes Educator" = resources_2, "Nurse Practitioner" = resources_3, "General Doctor" = resources_4, nurse = resources_5, "Physician's Assistant" = resources_6,podcast = resources_7, Instagram = resources_8, FaceBook = resources_9, TikTok = resources_10, Twitter = resources_11, YouTube = resources_12, Google = resources_13, Roommate = resources_24, "Friends without Diabetes" = resources_14, "Family live with" = resources_23, "Family don't live with" = resources_15, "Romantic Partner" = resources_25, "Other Type 1s" = resources_16, "Juvenile Diabetes Research Foundation" = resources_17, "Beyond Type One" = resources_18, "Other Non-profits" = resources_27, Websites = resources_19, Books = resources_20, Other = resources_26, none = resources_21 )
+
+temp
+
+txt  <- c()
+  
+for(i in 1:nrow(temp)){
+  txt[i] <- paste(colnames(temp)[temp[i,]==1],collapse=" \n ")
+}
+
+
+txt
 
 ```
-
-
-
-
-### Regression Line Outcome 1
 
 ```{r}
-data %>% 
-ggplot(aes(res_sum, des_score)) + 
-  geom_point()+ 
-  geom_smooth(method = "lm", color = "deeppink4") + theme(panel.grid = element_blank()) + labs(x = "Sum of Resources", y = "Diabetes Empowerment Score")
+
+fig <- plot_ly(type = 'scatter', mode = 'markers') 
+fig <- fig %>%
+  add_trace(
+    x               = data$res_sum, 
+    y               = data$des_score,
+    marker = list(
+      color = 'dodgerblue',
+      size = 15,
+      line = list(
+        color = 'black',
+        width = 4
+      )),
+    text            = txt,
+    hoverinfo       = 'text',
+    marker          = list(color='darkorchid'),
+    showlegend      = F 
+
+  )
+
+fig  %>% layout(title = 'Do More Resources Mean More Diabetes Empowerment?', xaxis = list(title = 'Number of Resources a Person Uses'), 
+        yaxis = list(title = 'Diabetes Empowerment Score'))
+
+legend = list(title=list(text='<b> Species of Iris </b>'))
+fig
 ```
 
 
-### Regression Line Outcome 2
-
-```{r}
-data %>% 
-ggplot(aes(res_sum, percent_time_70_180)) + 
-  geom_point()+ 
-  geom_smooth(method = "lm", color = "deeppink4") + theme(panel.grid = element_blank()) + labs(x = "Sum of Resources", y = "Time in Target Range")
-```
-
-
-### Regression Line Outcome 3 
-
-```{r}
-data %>% 
-ggplot(aes(res_sum, dds_means)) + 
-  geom_point()+ 
-  geom_smooth(method = "lm", color = "deeppink4") + theme(panel.grid = element_blank()) + labs(x = "Sum of Resources", y = "Diabetes Distress Score")
-```
-
-
-
-### Looking ahead 
-
-* The idea is to run t-tests, regressions, and a moderation and add visuals of those here
-
-------
-
-```{r}
-library(wordcloud2) 
-
- 
-int2 <- int %>% 
-unnest_tokens(word, lows) %>% 
-  select(word, part_id) |>
-  anti_join(stop_words)
-
-
-
-#letterCloud( frequency_dataframe, word = "LOW", color="white", backgroundColor="deepskyblue")
-
-#letterCloud( demoFreq, word = "PEACE", color="white", backgroundColor="pink")
-
-#view(demoFreq)
-
-#wordcloud2(data=demoFreq, size=1.6)
-
-
-frequency_dataframe = int2 %>% count(word) %>% arrange(desc(n))
-
-letterCloud( frequency_dataframe, word = "LOW", color="brown", backgroundColor= "green")
-
-```
-
-
-Interviews 
+Research Question Two
 =================================
 
+Column {data-width=600}
+-----------------------------------------------------------------------
 
-### **Description of Low Blood Sugar...** (if this image is blank, hit the refresh button)
+What is the diversity of low symptom experiences (physical sensation and the number when symptoms start and stop)?
 
-```{r echo=FALSE}
-#letterCloud( frequency_dataframe, word = "LOW", color="black", backgroundColor="deepskyblue")
+### **Participants were asked to talk about what it feels like experience low blood sugar**
 
-draft <- wordcloud2(data=frequency_dataframe, size=1.6)
 
-htmlwidgets::saveWidget(draft, 
-                        "draft.html",
-                        selfcontained = F, libdir = "lib")
+
+```{r eval=FALSE, include=FALSE}
+data <- data %>% 
+  mutate(int_number = case_when(
+part_id == "R_cLVjYpvjfQixvpv" ~ 1,
+part_id == "R_3Eyawv7ZHbUXMX8" ~ 2,
+part_id == "R_1fdCp8U6J7TIpPG" ~ 3, 
+part_id == "R_3nT0W62FHiaCGPg" ~ 4,   
+part_id == "R_1g6IuFecvJV6n6x" ~ 5, 
+part_id == "R_1mr573O3Ezhk8XJ" ~ 6,
+part_id == "R_R3vFesQEw5vyUyB" ~ 7, 
+part_id == "R_2TOeaDtBAd8rJgQ" ~ 8,
+part_id == "R_1jTbJ73cP1sJNAX" ~ 9,
+part_id == "R_2aEnOJSABPWYd6B" ~ 10))
+
+data$int_number <- as.factor(data$int_number)
+
 ```
-<iframe src="draft.html" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen="" allow="autoplay"></iframe>
 
------------
-
-
-### Words about Lows
 
 ```{r}
 #{.storyboard} removed this for now
+
+
 
 dat <- left_join(data, int)
 
@@ -290,29 +248,68 @@ unnest_tokens(word, lows)
 
 dat %>% 
 anti_join(stop_words) %>% 
-  filter(word != "low",word !="yeah",word != "ago",word != "feel", word !="feeling", word != "lows", word != "describe", word != "super", word != "sugar", word != "straight", word != "start", word != "dexcom", word != "feels", word != "feelings", word != "extreme", word != "gonna", word != "guys") %>% 
+  filter(word != "low",word !="yeah",word != "ago",word != "feel", word !="feeling", word != "lows", word != "describe", word != "super", word != "sugar", word != "straight", word != "start", word != "dexcom", word != "feels", word != "feelings", word != "extreme", word != "gonna", word != "guys", word != "happening", word != "started", word != "times", word != "leave", word != "lot",word != "type", word != "stuff") %>% 
 count(word, sort = TRUE) %>% 
   mutate(word = reorder(word, n)) %>% # make y-axis ordered by n
   slice(1:20) %>% # select only the first 15 rows
   ggplot(aes(n, word)) +
   theme_minimal() +
-    geom_col(fill = "darkorchid")+ theme(panel.grid.major.x = element_line(color = "grey",size = 0.25, linetype = 1), panel.grid = element_blank()) + labs( x = "Count", y = "Word", Title = "Word frequencies in posts", subtitle = "Top 20 words displayed", caption = "From first 5 interviews - transcription in progress")
+    geom_col(fill = "darkorchid")+ theme(panel.grid.major.x = element_line(color = "grey",size = 0.25, linetype = 1), panel.grid = element_blank()) + labs(title = "Word frequencies in interviews", x = "Number of Times Word was Spoken", y = "Word", subtitle = "Top 20 words displayed", caption = "From first 10 interviews - transcription in progress")
 
 
 ```
 
------
-
-### **Description of High Blood Sugar**
-
-~interview transcription still in progress~ 
-
 -------------
-Key Findings
+
+
+
+Some Initial Findings
 ========================
-### Results
+### **Diabetes is complicated: stress from diabetes and success with blood sugar outcomes do not have a clear relationship**
 
-Data Collection is ongoing: these graphs show the first 15 people in the study
+```{r}
+knitr::include_graphics("pancreasp.png")
+```
 
-* This is where the main results will be summarized and ideally graphed in a way that shows general trends and makes results digestable. The take-away will not be too meaningful with the current 15 data points but the full dataset can be plugged in once data collection is over and the direction of the results can be re-written accordingly. 
+
+
+```{r eval=FALSE, include=FALSE}
+p <- data %>% 
+  ggplot(aes(part_id, percent_time_70_180)) +   geom_point(aes(size = percent_time_70_180))
+
+p <- data %>% 
+  ggplot(aes(dds_means, percent_time_70_180)) +   geom_point(aes(size = percent_time_70_180, color = percent_time_70_180))
+
+p
+data %>% 
+  filter(dds_means >= 3) %>% 
+  select(percent_time_70_180)
+
+data %>% 
+  filter(percent_time_70_180 >= 90) %>% #2
+
+data %>% 
+  filter(percent_time_70_180 >= 80 & percent_time_70_180 < 90) #4
+
+data %>% 
+  filter(percent_time_70_180 >= 70 & percent_time_70_180 < 80) #1
+
+data %>% 
+  filter(percent_time_70_180 >= 60 & percent_time_70_180 < 70) #2
+
+data %>% 
+  filter(percent_time_70_180 >= 50 & percent_time_70_180 < 60) #2
+
+data %>% 
+  filter(percent_time_70_180 < 50) #2
+```
+
+```{r eval=FALSE, include=FALSE}
+sizep <- p + scale_size(range = c(5, 15))
+
+sizep
+ggsave("sizep.png")
+
+sizep
+```
 
