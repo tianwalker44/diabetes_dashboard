@@ -13,7 +13,6 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(tidyverse)
-#install.packages("plotly")
 library(plotly)
 library(rio)
 library(here)
@@ -21,6 +20,9 @@ library(colorblindr)
 library(tidytext)
 library(gt)
 library(psych)
+#install.packages("scales")         # Install & load scales
+library("scales")
+
 ```
 
 ```{r}
@@ -41,17 +43,69 @@ Column {data-width=400}
 
 **This dashboard currently shows graphics using the data that was made public as part of the pre-registration for this study. The goal is to have 200-500 people in the study and data collection is ongoing.** 
 
+**The overarching goal of the study is to learn more about the daily lives of people with type 1 diabetes including: what resources they use to get diabetes information, their experiences of high and low blood sugar symptoms, and general status in regards to physical and mental wellbeing.**
 
-### Demographics
+
+### **Demographics**
 
 ```{r}
 
+shaded <- c(data$age, data$insulin, data$education)
+
 df <- data %>% 
   rename(education = edu) %>% 
-  select( age, ywd, insulin, gender, education )
+  select( age, ywd, insulin, gender, education ) %>% 
+  gt() %>% 
+  tab_header(title = "Demographic Data from 15 Participants") %>%
+  cols_label(age = "Age", ywd = "Years with Diabetes", insulin = "Mode of Insulin Therapy", gender = "Gender", education = "Education") %>%
+  tab_source_note(source_note = "Source: Life of a Type 1 Study") %>%
+  tab_style(
+    style = list(cell_fill(color = "#d9e4fc")),
+    locations = cells_body(columns = vars(age, insulin, education)))
 
-describe(df)
+df
 ```
+
+
+# Definitions
+
+
+```{r}
+knitr::include_graphics("dds.png")
+```
+
+```{r eval=FALSE, include=FALSE}
+#install.packages("flextable")
+install.packages("rstatix")
+install.packages("gtsummary")
+install.packages("skimr")
+library(gtsummary)
+library(rstatix)
+library(flextable)
+library(janitor)
+library(skimr)
+
+skim(data$insulin)
+
+data %>% 
+   rename(education = edu)
+
+data %>%
+  tabyl(age, ywd, insulin, gender, education)
+
+%>% 
+  adorn_totals(where = "col") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting() %>% 
+  adorn_ns(position = "front") %>% 
+  adorn_title(
+    row_name = "Age Category",
+    col_name = "Gender",
+    placement = "combined") %>% # this is necessary to print as image
+  flextable::flextable() %>%    # convert to pretty image
+  flextable::autofit()          # format to one line per row 
+```
+
 
 
 ```{r eval=FALSE, include=FALSE}
@@ -87,10 +141,6 @@ df <- data %>%
 
 
 ```
-ywd = years with diabetes
-
-
-
 
 
 
@@ -246,7 +296,7 @@ dat <- left_join(data, int)
 dat <- dat %>% 
 unnest_tokens(word, lows)
 
-dat %>% 
+plot <- dat %>% 
 anti_join(stop_words) %>% 
   filter(word != "low",word !="yeah",word != "ago",word != "feel", word !="feeling", word != "lows", word != "describe", word != "super", word != "sugar", word != "straight", word != "start", word != "dexcom", word != "feels", word != "feelings", word != "extreme", word != "gonna", word != "guys", word != "happening", word != "started", word != "times", word != "leave", word != "lot",word != "type", word != "stuff") %>% 
 count(word, sort = TRUE) %>% 
@@ -254,8 +304,11 @@ count(word, sort = TRUE) %>%
   slice(1:20) %>% # select only the first 15 rows
   ggplot(aes(n, word)) +
   theme_minimal() +
-    geom_col(fill = "darkorchid")+ theme(panel.grid.major.x = element_line(color = "grey",size = 0.25, linetype = 1), panel.grid = element_blank()) + labs(title = "Word frequencies in interviews", x = "Number of Times Word was Spoken", y = "Word", subtitle = "Top 20 words displayed", caption = "From first 10 interviews - transcription in progress")
+    geom_col(fill = "royalblue1")+ theme(panel.grid.major.x = element_line(color = "grey",size = 0.25, linetype = 1), panel.grid = element_blank()) + labs(title = "Word frequencies in interviews", x = "Number of Times Word was Spoken", y = "Word", subtitle = "Top 20 words displayed", caption = "From first 10 interviews - transcription in progress")
 
+
+
+plot +  scale_x_continuous(breaks = pretty_breaks())
 
 ```
 
@@ -268,7 +321,7 @@ Some Initial Findings
 ### **Diabetes is complicated: stress from diabetes and success with blood sugar outcomes do not have a clear relationship**
 
 ```{r}
-knitr::include_graphics("pancreasp.png")
+knitr::include_graphics("pancreas_dat.png")
 ```
 
 
