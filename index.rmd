@@ -50,8 +50,6 @@ Column {data-width=400}
 
 ```{r}
 
-shaded <- c(data$age, data$insulin, data$education)
-
 df <- data %>% 
   rename(education = edu) %>% 
   select( age, ywd, insulin, gender, education ) %>% 
@@ -69,10 +67,42 @@ df
 
 # Definitions
 
+scroll left to right 
+
+Column {data-width=100}
+-------------------------------
 
 ```{r}
-knitr::include_graphics("dds.png")
+knitr::include_graphics("dd2.png")
 ```
+
+Column {data-width=100}
+-------------------------------
+
+```{r}
+knitr::include_graphics("de.png")
+```
+
+
+Column {data-width=100}
+-------------------------------
+
+```{r}
+knitr::include_graphics("2lbs2.jpg")
+```
+
+
+Definition Sources:
+Adolfsson, E. T., Smide, B., Gregeby, E., Fernström, L., & Wikblad, K. (2004). Implementing empowerment group education in diabetes. Patient Education and Counseling, 53(3), 319–324. https://doi.org/10.1016/j.pec.2003.07.009
+
+Skinner, T. C., Joensen, L., & Parkin, T. (2020). Twenty-five years of diabetes distress research. Diabetic Medicine, 37(3), 393–400. https://doi.org/10.1111/dme.14157
+
+Hypoglycemia—Symptoms and causes. (n.d.). Mayo Clinic. Retrieved March 20, 2023, from https://www.mayoclinic.org/diseases-conditions/hypoglycemia/symptoms-causes/syc-20373685
+
+
+
+
+
 
 ```{r eval=FALSE, include=FALSE}
 #install.packages("flextable")
